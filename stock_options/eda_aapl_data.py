@@ -15,6 +15,19 @@ data = pd.read_csv(csv_filename, index_col='Date', parse_dates=True)
 data['MA20'] = data['Close_AAPL'].rolling(window=20).mean()
 data['MA50'] = data['Close_AAPL'].rolling(window=50).mean()
 
+# Calculate 14-day RSI
+delta = data['Close_AAPL'].diff()
+
+gain = delta.where(delta > 0, 0)
+loss = -delta.where(delta < 0, 0)
+
+avg_gain = gain.rolling(window=14).mean()
+avg_loss = loss.rolling(window=14).mean()
+
+rs = avg_gain / avg_loss
+data['RSI'] = 100 - (100 / (1 + rs))
+
+
 # 2️⃣ Preview the data
 print("\n✅ First 5 rows:")
 print(data.head())

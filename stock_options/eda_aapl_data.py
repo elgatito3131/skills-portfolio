@@ -15,6 +15,14 @@ data = pd.read_csv(csv_filename, index_col='Date', parse_dates=True)
 data['MA20'] = data['Close_AAPL'].rolling(window=20).mean()
 data['MA50'] = data['Close_AAPL'].rolling(window=50).mean()
 
+# Calculate Bollinger Bands (20-day SMA ± 2 std dev)
+data['BB_MA20'] = data['Close_AAPL'].rolling(window=20).mean()
+data['BB_STD20'] = data['Close_AAPL'].rolling(window=20).std()
+
+data['BB_Upper'] = data['BB_MA20'] + 2 * data['BB_STD20']
+data['BB_Lower'] = data['BB_MA20'] - 2 * data['BB_STD20']
+
+
 # Calculate 14-day RSI
 delta = data['Close_AAPL'].diff()
 
@@ -64,6 +72,32 @@ plt.plot(data['Close_AAPL'], label='Close Price', color='blue')
 plt.plot(data['MA20'], label='20-Day MA', color='orange')
 plt.plot(data['MA50'], label='50-Day MA', color='green')
 plt.title('AAPL Closing Price with Moving Averages (2018-2024)')
+plt.xlabel('Date')
+plt.ylabel('Price (USD)')
+plt.legend()
+plt.grid()
+plt.show()
+
+# Plot RSI
+plt.figure(figsize=(12, 6))
+plt.plot(data['RSI'], label='14-Day RSI', color='purple')
+plt.axhline(70, color='red', linestyle='--', label='Overbought (70)')
+plt.axhline(30, color='green', linestyle='--', label='Oversold (30)')
+plt.title('AAPL 14-Day Relative Strength Index (RSI)')
+plt.xlabel('Date')
+plt.ylabel('RSI')
+plt.legend()
+plt.grid()
+plt.show()
+
+# Plot Bollinger Bands
+plt.figure(figsize=(12, 6))
+plt.plot(data['Close_AAPL'], label='Close Price', color='blue')
+plt.plot(data['BB_MA20'], label='20-Day MA', color='orange')
+plt.plot(data['BB_Upper'], label='Upper Band', color='green')
+plt.plot(data['BB_Lower'], label='Lower Band', color='red')
+plt.fill_between(data.index, data['BB_Lower'], data['BB_Upper'], color='grey', alpha=0.1)
+plt.title('AAPL Closing Price with Bollinger Bands (2018-2024)')
 plt.xlabel('Date')
 plt.ylabel('Price (USD)')
 plt.legend()
